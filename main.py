@@ -1,5 +1,4 @@
 import math
-import numpy
 
 # import window
 
@@ -8,10 +7,7 @@ fx_list = [ 0.86199480, 0.95802009, 1.0986123, 1.2943767]
 
 value_set:set = set()
 
-p = numpy.poly1d([1, 5, 6]) 
-root = p.r
-print(p)
-print(root)
+control_points = list(map(lambda a, b : (a,b), x_list, fx_list))
 
 def actual(x):
     print("Actual value: ")
@@ -87,8 +83,45 @@ def newtons_divided_difference_formula(approx_x):
 
 
 def get_roots(x):
-    t = numpy.poly1d()
+    a = -control_points[0][0]+3*control_points[1][0]-3*control_points[2][0]+control_points[3][0]
+    b = 3*control_points[0][0] - 6*control_points[1][0] + 6*control_points[2][0]
+    c = -3*control_points[0][0] + 3*control_points[1][0]
+    d = control_points[0][0]-x
+
+    if a == 0 and b == 0 and c == 0:
+        t = -d
+        print(f"t at {x} = {t}")
+        return t
+
+
+    if a == 0 and b == 0:
+        t = -d/c
+        print(f"t at {x} = {t}")
+        return t
+
+
+    if a == 0: 
+        a,b,c = b,c,d
+        t = (-b + (b**2-4*a*c)**(1/2))/(2*a)
+        print(f"t at {x} = {t}")
+        return t
+
+
+    del0 = b**2-3*a*c
+    del1 = 2*b**3-9*a*b*c+27*a**2*d
+
+
+    C = ((del1 - (del1**2-4*del0**3)**(1/2))/2)**(1/3)
+
+    if C == 0:
+        t = (-1/(3*a)*(b))
+    else:
+        C *= ((-1+(-3)**(1/2))/2)**0
+        t = (-1/(3*a)*(b + C + del0/C))
+
+    print(f"t at {x} = {t}")
     return t
+
 
 def bezier_point(approx_x):  
     control_points = list(map(lambda a, b : (a,b), x_list, fx_list))
@@ -110,14 +143,7 @@ def bezier_point(approx_x):
             + t**3*control_points[3][1]
         )   
     
-
-    # while len(control_points) > 1:
-    #     control_linestring = zip(control_points[:-1], control_points[1:])
-    #     control_points = [((1 - t) * p1[0] + t * p2[0],  (1 - t) * p1[1] + t* p2[1]) for p1, p2 in control_linestring]
-
-    # x,y = control_points[0]
-
-    print(f"B({approx_x}) = {(x,y)}")
+    print(f"B({t}) = {(x,y)}")
     return (x,y)
 
 def find_specific_x_from_bezier():
@@ -126,6 +152,8 @@ def find_specific_x_from_bezier():
 
 def absolute_error(actual, approx):
     Ea = actual - approx
+    min(*x_list)
+    Ea
     print(f"absolute error = {Ea}\n")
 
 
@@ -133,8 +161,7 @@ def main():
     f_x = actual(0.25)
     absolute_error(f_x, lagrange_interpolating_polynomial(0.25))
     absolute_error(f_x, newtons_divided_difference_formula(0.25))
-    bezier_point(0.25)
-    # absolute_error(f_x, )
+    absolute_error(f_x, bezier_point(0.25)[1])
 
 
 main()
