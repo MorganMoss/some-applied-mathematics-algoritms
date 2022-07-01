@@ -1,6 +1,8 @@
 from functools import reduce
 import math
 
+from linear_system_of_equation_solver import gauss_jordan_elimination
+
 x_list = [-1, -0.5, 0, 0.5]
 fx_list = [ 0.86199480, 0.95802009, 1.0986123, 1.2943767]
 value_set:set = set()
@@ -179,6 +181,76 @@ def linear_least_squares_polynomial(approx_x):
 
 
 
+
+
+#This has been made to work with any size polynomial
+def least_squares_polynomial(approx_x):
+    sum_left = list()
+    n = 2
+    m = len(x_list)
+
+    if printout: print(f"Least squares polynomial of degree {n}")
+
+    matrix = list()        
+    #generate set of equations
+    for j in range(n+1):
+        eq = list()
+        
+    
+        for k in range(n+1):
+            sum = 0
+
+            for i in range(m):
+                sum += x_list[i]**(k+j)
+            eq += [sum]
+
+        sum = 0    
+
+        for i in range(m):
+            sum += fx_list[i]*x_list[i]**(j)
+        
+
+        eq += [sum]
+        matrix += [eq]
+
+    if printout:
+        print("System of equations (Unsolved):")
+        for row in matrix:
+            for col in range(m):
+                if col < m-2:
+                    print(f"{row[col]}(a{col})", end = " +")
+                if col == m-2:
+                    print(f"{row[col]}(a{col})", end = " =")
+                if col == m-1:
+                    print(f"{row[col]}")
+    #solve set of equations
+    gauss_jordan_elimination(matrix)
+    if printout:
+        print("System of equations (Solved):")
+        for row in matrix:
+            for col in range(m):
+                if col < m-2:
+                    print(f"{row[col]}(a{col})", end = " +")
+                if col == m-2:
+                    print(f"{row[col]}(a{col})", end = " =")
+                if col == m-1:
+                    print(f"{row[col]}")
+        print("Therefore:")
+
+        for row in range(n+1):
+            print(f"a({row}) = {matrix[row][m-1]}")
+
+    P_x = 0
+    for row in range(n+1):
+        P_x += matrix[row][m-1]*approx_x**row
+
+    if printout:
+        print(f"P({approx_x}) = {P_x}\n")
+
+    return P_x
+
+
+
 #Printout of the absolute value of the difference between the two values
 def actual_error(actual, approx):
     error = abs(actual - approx)
@@ -218,6 +290,8 @@ def main():
     actual_error(f_x, linear_least_squares_polynomial(0.25))
     print("-"*line_len)
 
+    actual_error(f_x, least_squares_polynomial(0.25))
+    print("-"*line_len)
     
 
 if __name__ == '__main__': 
