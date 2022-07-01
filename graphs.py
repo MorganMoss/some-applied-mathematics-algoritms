@@ -1,13 +1,7 @@
 import pyglet
 from pyglet import shapes
 
-import main
-
-
-
-to_draw = list()
-
-
+import graph_approximation
 
 def draw_axis(line_width = 1):
     global to_draw
@@ -18,40 +12,41 @@ def draw_axis(line_width = 1):
     to_draw += [x_axis,  y_axis]
 
 
-def draw_graphs(line_width = 1):
+def draw_graphs(line_width = 5):
     global to_draw
     for x in range(width):
         x-=width/2
         prev_x = x -1
 
-        y = main.actual(x/scale)*scale-y_offset
-        prev_y = main.actual(prev_x/scale)*scale-y_offset
+        y = graph_approximation.actual(x/scale)*scale-y_offset
+        prev_y = graph_approximation.actual(prev_x/scale)*scale-y_offset
         to_draw += [shapes.Line(prev_x+width/2, prev_y+height/2, x+width/2, y+height/2,
             line_width, color = (255, 255, 255), batch = batch)]
 
-        y = main.lagrange_interpolating_polynomial(x/scale)*scale-y_offset
-        prev_y = main.lagrange_interpolating_polynomial(prev_x/scale)*scale-y_offset
+        y = graph_approximation.lagrange_interpolating_polynomial(x/scale)*scale-y_offset
+        prev_y = graph_approximation.lagrange_interpolating_polynomial(prev_x/scale)*scale-y_offset
 
         to_draw += [shapes.Line(prev_x+width/2, prev_y+height/2, x+width/2, y+height/2,
             line_width, color = (255, 0, 0), batch = batch)]
 
-        y = main.newtons_divided_difference_formula(x/scale)*scale-y_offset
-        prev_y = main.newtons_divided_difference_formula(prev_x/scale)*scale-y_offset
+        y = graph_approximation.newtons_divided_difference_formula(x/scale)*scale-y_offset
+        prev_y = graph_approximation.newtons_divided_difference_formula(prev_x/scale)*scale-y_offset
 
         to_draw += [shapes.Line(prev_x+width/2, prev_y+height/2, x+width/2, y+height/2,
             line_width, color = (0, 255, 0), batch = batch)]
     
-        x,y = main.bezier_point(x/scale)
+        x,y = graph_approximation.bezier_point(x/scale)
         x,y = x*scale, y*scale-y_offset
-        prev_x,prev_y = main.bezier_point(prev_x/scale)
+        prev_x,prev_y = graph_approximation.bezier_point(prev_x/scale)
         prev_x,prev_y = prev_x*scale, prev_y*scale-y_offset
 
         to_draw += [shapes.Line(prev_x+width/2, prev_y+height/2, x+width/2, y+height/2,
             line_width, color = (0, 0, 255), batch = batch)]
 
 
-def make_point(x_, y_, color_, offset = 20, line_width = 3):
+def make_point(x_, y_, color_, offset = 20, line_width = 8):
     global to_draw
+    offset = offset/10*global_font_size
     r = 3
     to_draw += [shapes.Circle(x_+width/2, y_+height/2,line_width,color=color_,batch = batch)]
     color_ = (*color_,255)
@@ -68,16 +63,16 @@ def plot_points( x_ls = [-1, -0.5, 0, 0.25, 0.5]):
     for x in x_ls:
         x*=scale
 
-        y = main.actual(x/scale)*scale-y_offset
+        y = graph_approximation.actual(x/scale)*scale-y_offset
         make_point(x, y, (255, 255, 255), 60)
 
-        y = main.lagrange_interpolating_polynomial(x/scale)*scale-y_offset
-        make_point(x, y, (255, 0,0), 40)
+        y = graph_approximation.lagrange_interpolating_polynomial(x/scale)*scale-y_offset
+        make_point(x, y, (255, 0,0),-40)
 
-        y = main.newtons_divided_difference_formula(x/scale)*scale-y_offset
-        make_point(x, y, (0, 255, 0))
+        y = graph_approximation.newtons_divided_difference_formula(x/scale)*scale-y_offset
+        make_point(x, y, (0, 255, 0), 40)
 
-        x,y = main.bezier_point(x/scale)
+        x,y = graph_approximation.bezier_point(x/scale)
         x,y = x*scale, y*scale-y_offset
         make_point(x, y, (100,100,255), -20)
 
@@ -92,15 +87,15 @@ def label():
         ("Bezier Curve", (100,100,255,255))
     ]
 
-    i = 0
+    i = 1
 
     for g in g_list:
         name, color = g
-        to_draw += [pyglet.text.Label(text = f"{name}  ⎯⎯⎯⎯⎯⎯",
+        to_draw += [pyglet.text.Label(text = f"―――\t {name}",
             font_name='Times New Roman',
             font_size=global_font_size,
             x=5,
-            y=height-10-i*global_font_size*2.5, 
+            y=height-i*global_font_size*1.5, 
             color = color,
             anchor_y='center', batch=text_batch)]
         i+=1
@@ -125,14 +120,15 @@ if __name__ == "__main__":
     else: 
         y_offset = int(y_offset)
 
-
     window = pyglet.window.Window(width, height, "Graphs")
+    pyglet.gl.glClearColor(0.2,0.2,0.2,0.2)
+    
     batch = pyglet.graphics.Batch()
     text_batch = pyglet.graphics.Batch()
 
-    global_font_size = 12
+    global_font_size = 20
 
-    
+    to_draw = list()
     draw_axis()
     draw_graphs()
     plot_points()
@@ -146,5 +142,4 @@ if __name__ == "__main__":
  
     pyglet.app.run()
 
-    main.main()
 

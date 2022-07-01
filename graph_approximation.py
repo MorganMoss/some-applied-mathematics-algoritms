@@ -2,11 +2,10 @@ import math
 
 x_list = [-1, -0.5, 0, 0.5]
 fx_list = [ 0.86199480, 0.95802009, 1.0986123, 1.2943767]
-
 value_set:set = set()
-
 printout = False
 
+#############################################################################################
 #Actual curve
 def actual(x):
     if printout: print("Actual value: ")
@@ -14,7 +13,7 @@ def actual(x):
     if printout: print(f"f({x}) = {f_x}\n")
     return f_x
 
-#Lagrange Interpolating Polynomial
+#Lagrange Interpolating Polynomial - Generalized
 def lagrange_interpolating_polynomial(approx_x):
     n = len(x_list)
     p_x = 0
@@ -52,7 +51,7 @@ def divided_difference(list_x, list_y):
     value_set.add(f"f{list_x} = {value}")
     return value
 
-#Newtons Divided Difference Formula
+#Newtons Divided Difference Formula - Generalized
 def newtons_divided_difference_formula(approx_x):
     if printout: print(f"Newtons divided difference formula of degree {len(x_list)-1}")
     p_x = fx_list[0]
@@ -79,7 +78,7 @@ def newtons_divided_difference_formula(approx_x):
     value_set = set()
 
 
-    if printout: print(f"P({approx_x}) = {p_x}")
+    if printout: print(f"P({approx_x}) = {p_x}\n")
     return p_x
 
 #Just gets the first one - fine for my use case
@@ -146,27 +145,44 @@ def bezier_point(approx_x):
             + t**3*control_points[3][1]
         )   
     
-    if printout: print(f"B({t}) = {(x,y)}")
+    if printout: print(f"B({t}) = {(x,y)}\n")
     return (x,y)
 
-#4th derivative of f
-# def f4(x):
-#     return (2*math.e*x*(math.e^(2*x)-8*math.e**x+4))/(math.e**x + 2)**4
-
+#Printout of the absolute value of the difference between the two values
 def actual_error(actual, approx):
     error = abs(actual - approx)
     if printout: print(f"Error = {error}\n")
 
 
+
+
 def main():
-    f_x = actual(0.25)
     global printout
     printout = True
-    #Question 1.1-1.2
+    line_len = 35
+
+    print("-"*line_len)
+    print("Actual Value")
+    print("-"*line_len)
+
+    f_x = actual(0.25)
+    print("-"*line_len)
+
+    print("Question 1.1-1.2")
+    print("-"*line_len)
+
     actual_error(f_x, lagrange_interpolating_polynomial(0.25))
+    print("-"*line_len)
+
     actual_error(f_x, newtons_divided_difference_formula(0.25))
+    print("-"*line_len)
+
     actual_error(f_x, bezier_point(0.25)[1])
-    #Question 2.1-2.3
+    print("-"*line_len)
+
+
+    print("Question 2.1-2.3")
+    print("-"*line_len)
 
 if __name__ == '__main__': 
     main()
