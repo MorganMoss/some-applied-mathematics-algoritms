@@ -47,6 +47,18 @@ def draw_graphs(line_width = 5):
         to_draw += [shapes.Line(prev_x+width/2, prev_y+height/2, x+width/2, y+height/2,
             line_width, color = (255, 255, 0), batch = batch)]
 
+        y = graph_approximation.least_squares_polynomial(x/scale)*scale-y_offset
+        prev_y = graph_approximation.least_squares_polynomial(prev_x/scale)*scale-y_offset
+
+        to_draw += [shapes.Line(prev_x+width/2, prev_y+height/2, x+width/2, y+height/2,
+            line_width, color = (0, 255, 255), batch = batch)]
+
+        y = graph_approximation.least_squares_exponential_form(x/scale)*scale-y_offset
+        prev_y = graph_approximation.least_squares_exponential_form(prev_x/scale)*scale-y_offset
+
+        to_draw += [shapes.Line(prev_x+width/2, prev_y+height/2, x+width/2, y+height/2,
+            line_width, color = (255, 0, 255), batch = batch)]
+
 
 def make_point(x_, y_, color_, offset = 20, line_width = 8):
     global to_draw
@@ -82,6 +94,12 @@ def plot_points( x_ls = [-1, -0.5, 0, 0.25, 0.5]):
         y = graph_approximation.linear_least_squares_polynomial(x/scale)*scale-y_offset
         make_point(x, y, (255, 255, 0), 80)
 
+        y = graph_approximation.least_squares_polynomial(x/scale)*scale-y_offset
+        make_point(x, y, (0, 255, 255), -60)
+        
+        y = graph_approximation.least_squares_exponential_form(x/scale)*scale-y_offset
+        make_point(x, y, (255, 0, 255), -80)
+
 
 def label():
     global to_draw
@@ -91,7 +109,9 @@ def label():
         ("Lagrange Interpolating Polynomial", (255, 0,0,255)),
         ("Newtons Divided Difference Formula", (0, 255, 0,255)),
         ("Bezier Curve", (100,100,255,255)),
-        ("Linear Least Squares", (255,255,100,255))
+        ("Linear Least Squares", (255,255,100,255)),
+        ("Least Squares of Degree 2", (100,255,255,255)),
+        ("Least Squares (Exponential)", (255,100,255,255))
     ]
 
     i = 1

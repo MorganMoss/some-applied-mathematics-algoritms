@@ -1,4 +1,3 @@
-from functools import reduce
 import math
 
 from linear_system_of_equation_solver import gauss_jordan_elimination
@@ -16,11 +15,12 @@ def actual(x):
     if printout: print(f"f({x}) = {f_x}\n")
     return f_x
 
+#############################################################################################
 #Lagrange Interpolating Polynomial - Generalized
 def lagrange_interpolating_polynomial(approx_x):
     n = len(x_list)
     p_x = 0
-    if printout: print(f"Lagrange interpolating polynomial of degree {n-1}")
+    if printout: print(f"1.1 a) Lagrange interpolating polynomial of degree {n-1}")
 
     #P(x) sum 
     for j in range(n):  
@@ -38,6 +38,7 @@ def lagrange_interpolating_polynomial(approx_x):
     if printout: print(f"P({approx_x}) = {p_x}\n")
     return p_x
 
+#############################################################################################
 #Used for Newtons Divided Difference Formula
 def divided_difference(list_x, list_y):
     if len(list_x) == 2:
@@ -56,7 +57,7 @@ def divided_difference(list_x, list_y):
 
 #Newtons Divided Difference Formula - Generalized
 def newtons_divided_difference_formula(approx_x):
-    if printout: print(f"Newtons divided difference formula of degree {len(x_list)-1}")
+    if printout: print(f"1.1 b) Newtons divided difference formula of degree {len(x_list)-1}")
     p_x = fx_list[0]
 
     for n in range(1, len(fx_list)):
@@ -84,6 +85,7 @@ def newtons_divided_difference_formula(approx_x):
     if printout: print(f"P({approx_x}) = {p_x}\n")
     return p_x
 
+#############################################################################################
 #Just gets the first one - fine for my use case
 def get_roots(x):
     a = -x_list[0]+3*x_list[1]-3*x_list[2]+x_list[3]
@@ -131,7 +133,7 @@ def get_roots(x):
 def bezier_point(approx_x):  
     control_points = list(map(lambda a, b : (a,b), x_list, fx_list))
 
-    if printout: print(f"Bezier point from control points: {control_points}")  
+    if printout: print(f"1.1 c) Bezier point from control points: {control_points}")  
     t = get_roots(approx_x)
 
     x = (
@@ -151,9 +153,10 @@ def bezier_point(approx_x):
     if printout: print(f"B({t}) = {(x,y)}\n")
     return (x,y)
 
-
+#############################################################################################
+#Used just for the 1st degree polynomial
 def linear_least_squares_polynomial(approx_x):
-    if printout: print("Linear Least Squares Polynomial")
+    if printout: print("2.1) Linear Least Squares Polynomial")
     n = len(x_list)
     sum_xy = 0
     sum_x = 0
@@ -179,17 +182,14 @@ def linear_least_squares_polynomial(approx_x):
 
     return m*approx_x+c
 
-
-
-
-
+#############################################################################################
 #This has been made to work with any size polynomial
 def least_squares_polynomial(approx_x):
     sum_left = list()
     n = 2
     m = len(x_list)
 
-    if printout: print(f"Least squares polynomial of degree {n}")
+    if printout: print(f"2.2) Least squares polynomial of degree {n}")
 
     matrix = list()        
     #generate set of equations
@@ -218,9 +218,9 @@ def least_squares_polynomial(approx_x):
         for row in matrix:
             for col in range(m):
                 if col < m-2:
-                    print(f"{row[col]}(a{col})", end = " +")
+                    print(f"{row[col]}(a{col})", end = " + ")
                 if col == m-2:
-                    print(f"{row[col]}(a{col})", end = " =")
+                    print(f"{row[col]}(a{col})", end = " = ")
                 if col == m-1:
                     print(f"{row[col]}")
     #solve set of equations
@@ -230,9 +230,9 @@ def least_squares_polynomial(approx_x):
         for row in matrix:
             for col in range(m):
                 if col < m-2:
-                    print(f"{row[col]}(a{col})", end = " +")
+                    print(f"{row[col]}(a{col})", end = " + ")
                 if col == m-2:
-                    print(f"{row[col]}(a{col})", end = " =")
+                    print(f"{row[col]}(a{col})", end = " = ")
                 if col == m-1:
                     print(f"{row[col]}")
         print("Therefore:")
@@ -249,16 +249,70 @@ def least_squares_polynomial(approx_x):
 
     return P_x
 
+#############################################################################################
+# Simplified the matrices before implementation
+def least_squares_exponential_form(approx_x):
+    if printout: print("2.3) Exponential Least Squares Polynomial")
+    
+    #generate set of equations
+    n = len(x_list)
+    sum_xlny = 0
+    sum_x = 0
+    sum_lny = 0
+    sum_xx = 0
+    for i in range(n):
+        sum_xlny += x_list[i]*math.log(fx_list[i])
+        sum_x +=  x_list[i]
+        sum_lny +=  math.log(fx_list[i])
+        sum_xx +=  x_list[i]**2
+    
+    eq1 = [sum_x, n, sum_lny]
+    eq2 = [sum_xx,  sum_x, sum_xlny]
 
+    matrix = [eq1, eq2]
+    m = 3
+    
+    if printout:
+        print("System of equations (Unsolved):")
+        for row in matrix:
+            for col in range(m):
+                if col < m-2:
+                    print(f"{row[col]}(a{col})", end = " + ")
+                if col == m-2:
+                    print(f"{row[col]}(a{col})", end = " = ")
+                if col == m-1:
+                    print(f"{row[col]}")
 
+    #solve set of equations
+    gauss_jordan_elimination(matrix)
+    if printout:
+        print("System of equations (Solved):")
+        for row in matrix:
+            for col in range(m):
+                if col < m-2:
+                    print(f"{row[col]}(a{col})", end = " + ")
+                if col == m-2:
+                    print(f"{row[col]}(a{col})", end = " = ")
+                if col == m-1:
+                    print(f"{row[col]}")
+
+    a = matrix[0][-1]
+    b = math.pow(math.e, matrix[-1][-1])
+    P_x = b*math.pow(math.e, a*approx_x)
+    if printout:
+        print("Therefore, in the equation y = be^ax,")
+        print(f"a = {a}\nb = {b}")
+        print(f"P({approx_x}) = {P_x}\n")
+
+    return P_x
+
+#############################################################################################
 #Printout of the absolute value of the difference between the two values
 def actual_error(actual, approx):
     error = abs(actual - approx)
     if printout: print(f"Error = {error}\n")
-
-
-
-
+#############################################################################################
+#run program from here for printout of approximations at x = 0.25
 def main():
     global printout
     printout = True
@@ -283,7 +337,6 @@ def main():
     actual_error(f_x, bezier_point(0.25)[1])
     print("-"*line_len)
 
-
     print("Question 2.1-2.3")
     print("-"*line_len)
 
@@ -292,7 +345,9 @@ def main():
 
     actual_error(f_x, least_squares_polynomial(0.25))
     print("-"*line_len)
-    
+
+    actual_error(f_x, least_squares_exponential_form(0.25))
+    print("-"*line_len)
 
 if __name__ == '__main__': 
     main()
