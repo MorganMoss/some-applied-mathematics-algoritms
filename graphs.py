@@ -35,13 +35,17 @@ def draw_graphs(line_width = 5):
         to_draw += [shapes.Line(prev_x+width/2, prev_y+height/2, x+width/2, y+height/2,
             line_width, color = (0, 255, 0), batch = batch)]
     
-        x,y = graph_approximation.bezier_point(x/scale)
-        x,y = x*scale, y*scale-y_offset
-        prev_x,prev_y = graph_approximation.bezier_point(prev_x/scale)
-        prev_x,prev_y = prev_x*scale, prev_y*scale-y_offset
+        y = graph_approximation.bezier_point(x/scale)[1]*scale-y_offset
+        prev_y = graph_approximation.bezier_point(prev_x/scale)[1]*scale-y_offset
 
         to_draw += [shapes.Line(prev_x+width/2, prev_y+height/2, x+width/2, y+height/2,
             line_width, color = (0, 0, 255), batch = batch)]
+        
+        y = graph_approximation.linear_least_squares_polynomial(x/scale)*scale-y_offset
+        prev_y = graph_approximation.linear_least_squares_polynomial(prev_x/scale)*scale-y_offset
+
+        to_draw += [shapes.Line(prev_x+width/2, prev_y+height/2, x+width/2, y+height/2,
+            line_width, color = (255, 255, 0), batch = batch)]
 
 
 def make_point(x_, y_, color_, offset = 20, line_width = 8):
@@ -62,7 +66,7 @@ def make_point(x_, y_, color_, offset = 20, line_width = 8):
 def plot_points( x_ls = [-1, -0.5, 0, 0.25, 0.5]):
     for x in x_ls:
         x*=scale
-
+        
         y = graph_approximation.actual(x/scale)*scale-y_offset
         make_point(x, y, (255, 255, 255), 60)
 
@@ -72,9 +76,11 @@ def plot_points( x_ls = [-1, -0.5, 0, 0.25, 0.5]):
         y = graph_approximation.newtons_divided_difference_formula(x/scale)*scale-y_offset
         make_point(x, y, (0, 255, 0), 40)
 
-        x,y = graph_approximation.bezier_point(x/scale)
-        x,y = x*scale, y*scale-y_offset
+        y = graph_approximation.bezier_point(x/scale)[1]*scale-y_offset
         make_point(x, y, (100,100,255), -20)
+
+        y = graph_approximation.linear_least_squares_polynomial(x/scale)*scale-y_offset
+        make_point(x, y, (255, 255, 0), 80)
 
 
 def label():
@@ -84,7 +90,8 @@ def label():
         ("Actual", (255,255,255,255)),
         ("Lagrange Interpolating Polynomial", (255, 0,0,255)),
         ("Newtons Divided Difference Formula", (0, 255, 0,255)),
-        ("Bezier Curve", (100,100,255,255))
+        ("Bezier Curve", (100,100,255,255)),
+        ("Linear Least Squares", (255,255,100,255))
     ]
 
     i = 1

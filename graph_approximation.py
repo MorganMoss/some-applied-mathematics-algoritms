@@ -1,3 +1,4 @@
+from functools import reduce
 import math
 
 x_list = [-1, -0.5, 0, 0.5]
@@ -148,6 +149,36 @@ def bezier_point(approx_x):
     if printout: print(f"B({t}) = {(x,y)}\n")
     return (x,y)
 
+
+def linear_least_squares_polynomial(approx_x):
+    if printout: print("Linear Least Squares Polynomial")
+    n = len(x_list)
+    sum_xy = 0
+    sum_x = 0
+    sum_y = 0
+    sum_xx = 0
+    for i in range(n):
+        sum_xy += x_list[i]*fx_list[i]
+        sum_x +=  x_list[i]
+        sum_y +=  fx_list[i]
+        sum_xx +=  x_list[i]**2
+    if printout:
+        print(f"sum of x*y = {sum_xy}" )
+        print(f"sum of x = {sum_x}" )
+        print(f"sum of y = {sum_y}" )
+        print(f"sum of x*x = {sum_xx}" )
+
+
+    m = (n*sum_xy-sum_x*sum_y)/(n*sum_xx - sum_x**2)
+    c = (sum_y-m*sum_x)/n
+    if printout:
+        print(f"y = {m}x + {c}")
+        print(f"y({approx_x}) = {m*approx_x+c}\n")
+
+    return m*approx_x+c
+
+
+
 #Printout of the absolute value of the difference between the two values
 def actual_error(actual, approx):
     error = abs(actual - approx)
@@ -183,6 +214,11 @@ def main():
 
     print("Question 2.1-2.3")
     print("-"*line_len)
+
+    actual_error(f_x, linear_least_squares_polynomial(0.25))
+    print("-"*line_len)
+
+    
 
 if __name__ == '__main__': 
     main()
