@@ -153,6 +153,23 @@ def bezier_point(approx_x):
     if printout: print(f"B({t}) = {(x,y)}\n")
     return (x,y)
 
+def bezier_point_y_only(approx_x):  
+    control_points = list(map(lambda a, b : (a,b), x_list, fx_list))
+
+    if printout: print(f"1.1 c) Bezier point from control points: {control_points}")  
+    t = get_roots(approx_x)
+
+    y = (
+            (1 - t)**3*control_points[0][1] 
+            + 3*(1 -  t)**2*t*control_points[1][1] 
+            + 3*(1 -  t)*t**2*control_points[2][1] 
+            + t**3*control_points[3][1]
+        )   
+    
+
+    if printout: print(f"B({approx_x}) = {y}\n")
+    return y
+
 #############################################################################################
 #Used just for the 1st degree polynomial
 def linear_least_squares_polynomial(approx_x):
